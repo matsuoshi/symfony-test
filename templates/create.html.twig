@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  todo create
+{% endblock %}
+
+{% block body %}
+  <form method="post">
+    {{ form_widget(form._token) }}
+    {{ form_widget(form.todo) }}
+    {{ form_errors(form.todo) }}
+    <button type="submit">登録</button>
+  </form>
+{% endblock %}
