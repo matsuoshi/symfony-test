@@ -37,13 +37,23 @@ class TodoController extends Controller
 
     /**
      * @Route("/todo/create", name="todo_create")
+     * @Route("/todo/{id}/edit", name="todo_edit", requirements={"id" = "\d+"})
      * @Template("create.html.twig")
      * @param Request $request
+     * @param null $id
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function create(Request $request)
+    public function create(Request $request, $id = null)
     {
-        $form = $this->createForm(TodoType::class, new Todo());
+        if ($id === null) {
+            $todo = new Todo();
+        } else {
+            $todo = $this->todoRepository->find($id);
+            if ($todo === null) {
+                throw new NotFoundHttpException();
+            }
+        }
+        $form = $this->createForm(TodoType::class, $todo);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -52,13 +62,15 @@ class TodoController extends Controller
             $entityManager->persist($todo);
             $entityManager->flush();
 
-            $this->addFlash('success', '登録しました。');
+            $operation = $id ? '更新' : '登録';
+            $this->addFlash('success', $operation . 'しました。');
 
-            return $this->redirectToRoute('todo_create');
+            return $this->redirectToRoute('todo_edit', ['id' => $todo->getId()]);
         }
 
         return [
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'todo' => $todo,
         ];
     }
 }

@@ -5,9 +5,11 @@
 {% block body %}
   <h1>hello world</h1>
 
+  <a href="{{ url('todo_create') }}">新規登録</a>
+
   <ul>
     {% for todo in todoList %}
-      <li>{{ todo.id }} - {{ todo.todo }}</li>
+      <li>{{ todo.id }} - <a href="{{ url('todo_edit', { id: todo.id }) }}">{{ todo.todo }}</a></li>
     {% endfor %}
   </ul>
 

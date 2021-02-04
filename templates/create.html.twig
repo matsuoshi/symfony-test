@@ -11,7 +11,7 @@
     </div>
   {% endfor %}
 
-  <form method="post">
+  <form method="post" action="{{ todo.id ? url('todo_edit', { id: todo.id }) : url('todo_create') }}">
     {{ form_widget(form._token) }}
     {{ form_widget(form.todo) }}
     {{ form_errors(form.todo) }}
