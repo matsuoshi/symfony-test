@@ -8,6 +8,8 @@ use App\Repository\TodoRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class TodoController extends Controller
@@ -40,7 +42,7 @@ class TodoController extends Controller
      * @Route("/todo/{id}/edit", name="todo_edit", requirements={"id" = "\d+"})
      * @Template("create.html.twig")
      * @param Request $request
-     * @param null $id
+     * @param int|null $id
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function create(Request $request, $id = null)
@@ -72,5 +74,27 @@ class TodoController extends Controller
             'form' => $form->createView(),
             'todo' => $todo,
         ];
+    }
+
+    /**
+     * @Route("/todo/{id}/remove", name="todo_remove", requirements={"id" = "\d"}, methods={"POST"}) # ※1
+     */
+    public function remove(Request $request, $id)
+    {
+        $token = $request->headers->get('x-csrf-token'); # ※2
+        if (!$this->isCsrfTokenValid('x-csrf-token', $token)) {
+            throw new BadRequestHttpException();
+        }
+
+        $todo = $this->todoRepository->find($id);
+        if ($todo == null) {
+            throw new NotFoundHttpException();
+        }
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->remove($todo);
+        $entityManager->flush();
+
+        return $this->json(['success' => true]);
     }
 }

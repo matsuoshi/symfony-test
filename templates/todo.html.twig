@@ -2,6 +2,35 @@
 
 {% block title %}Hello{% endblock %}
 
+{% block javascripts %}
+  <script>
+    window.onload = event => {
+      const btns = document.querySelectorAll('button')
+      btns.forEach((btn) => {
+        btn.addEventListener('click', event => {
+          if (!window.confirm('削除しますか？')) {
+            return;
+          }
+          fetch(btn.dataset.url, {
+            method: 'post',
+            headers: {
+              'x-csrf-token': '{{ csrf_token('x-csrf-token') }}'
+            }
+          })
+            .then((res) => {
+              if (res.ok) {
+                alert('削除しました')
+                btn.parentElement.remove();
+              } else {
+                alert('削除に失敗しました')
+              }
+            })
+        })
+      })
+    }
+  </script>
+{% endblock %}
+
 {% block body %}
   <h1>hello world</h1>
 
@@ -9,7 +38,9 @@
 
   <ul>
     {% for todo in todoList %}
-      <li>{{ todo.id }} - <a href="{{ url('todo_edit', { id: todo.id }) }}">{{ todo.todo }}</a></li>
+      <li>{{ todo.id }} - <a href="{{ url('todo_edit', { id: todo.id }) }}">{{ todo.todo }}</a>
+        <button type="button" data-url="{{ url('todo_remove', { id: todo.id }) }}">削除</button>
+      </li>
     {% endfor %}
   </ul>
 
