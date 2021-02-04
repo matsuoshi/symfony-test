@@ -2,12 +2,13 @@
 
 {% block title %}Hello{% endblock %}
 
-{%  block body %}
-  <h1>hello world from twig!</h1>
+{% block body %}
+  <h1>hello world</h1>
 
-  {% if flg %}
-    {% for num in nums %}
-      {{ message }} world {{ num }}
+  <ul>
+    {% for todo in todoList %}
+      <li>{{ todo.id }} - {{ todo.todo }}</li>
     {% endfor %}
-  {% endif %}
+  </ul>
+
 {% endblock %}

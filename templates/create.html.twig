@@ -5,10 +5,18 @@
 {% endblock %}
 
 {% block body %}
+  {% for message in app.flashes('success') %}
+    <div class="alert alert-success">
+      {{ message }}
+    </div>
+  {% endfor %}
+
   <form method="post">
     {{ form_widget(form._token) }}
     {{ form_widget(form.todo) }}
     {{ form_errors(form.todo) }}
     <button type="submit">登録</button>
   </form>
+
+  <a href="{{ url('todo') }}">一覧へ戻る</a>
 {% endblock %}
